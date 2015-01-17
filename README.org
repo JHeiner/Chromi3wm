@@ -1,5 +1,4 @@
 
-#+TITLE: README.org
 #+STARTUP: showall
 
 * Talk to i3 from a Chrome Extension
@@ -10,10 +9,10 @@
 
 ** Legal Stuff
 
-#+BEGIN_VERSE
+#+BEGIN_EXAMPLE
 Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
 All rights reserved. See LICENSE file.
-#+END_VERSE
+#+END_EXAMPLE
 
 # Local Variables:
 # eval: (auto-fill-mode);
