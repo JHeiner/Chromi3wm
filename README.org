@@ -1,0 +1,20 @@
+
+#+TITLE: README.org
+#+STARTUP: showall
+
+* Talk to i3 from a Chrome Extension
+
+[[http://developer.chrome.com/extensions/nativeMessaging]]
+
+[[http://i3wm.org/docs/ipc.html]]
+
+** Legal Stuff
+
+#+BEGIN_VERSE
+Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
+All rights reserved. See LICENSE file.
+#+END_VERSE
+
+# Local Variables:
+# eval: (auto-fill-mode);
+# End:

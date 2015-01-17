@@ -1,0 +1,10 @@
+{
+    "name": "i3wm tricks",
+    "version": "0.2",
+    "description": "Message i3wm.",
+    "background": {
+	"persistent": false,
+	"scripts": ["background.js"] },
+    "permissions": [ "nativeMessaging" ],
+    "manifest_version": 2
+}
