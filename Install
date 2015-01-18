@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+# Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
+# All rights reserved. See LICENSE file.
+
+import argparse, json, os, sys
+
+config = os.environ.get( 'XDG_CONFIG_HOME' ) or '~/.config'
+if config[0] == '~':
+    config = os.path.expanduser( config )
+
+preferences = os.path.join( config, 'chromium/Default/Preferences' )
+if not os.path.exists( preferences ):
+    preferences = os.path.join( config, 'chrome/Default/Preferences' )
+
+parser = argparse.ArgumentParser(
+    description='hooks NativeMessageRelay into Chrome',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter )
+parser.add_argument( '-n', '--dryrun', action='store_true',
+                     help='do nothing, just print info' )
+parser.add_argument( '-u', '--uninstall', action='store_true',
+                     help='delete (instead of install)' )
+parser.add_argument( "prefs", nargs='?', type=argparse.FileType(),
+                     default=preferences, help='chrome preferences file' )
+args = parser.parse_args()
+
+preferences = args.prefs.name
+
+name = 'org.i3wm.relay.json'
+here = sys.path[0]
+into = os.path.join( os.path.dirname( os.path.dirname( preferences ) ),
+                     'NativeMessagingHosts' )
+
+print( '    file:', name )
+print( '    from:', here )
+print( '      to:', into )
+
+ids = []
+settings = json.load( args.prefs )['extensions']['settings']
+args.prefs.close()
+for id in settings:
+    if 'path' in settings[id]:
+        path = settings[id]['path']
+        if here == path:
+            ids.append( id )
+            print( '      id:', id )
+
+if args.uninstall:
+
+    if not args.dryrun:
+        os.remove( os.path.join( into, name ) )
+        print( 'uninstall successful' )
+
+elif len( ids ) != 1:
+
+    raise RuntimeError( '%s extensions in the "from" directory' % len( ids ) )
+
+elif not args.dryrun:
+
+    with open( os.path.join( here, name ) ) as src:
+        with open( os.path.join( into, name ), 'w' ) as dst:
+            while True:
+                line = src.readline()
+                if not line: break
+                dst.write( line
+                           .replace( 'ABSOLUTEPATH', here )
+                           .replace( 'EXTENSIONID', ids[0] ) )
+
+    print( 'install successful' )
+

@@ -7,6 +7,34 @@
 
 [[http://i3wm.org/docs/ipc.html]]
 
+** Installing
+
+First, in [[chrome://extensions]] "load unpacked extension" from this
+directory. This will assign an ID, which needs to get put into the
+NativeMessagingHosts manifest. The [[file:Install]] script knows how
+to read the browser preferences to find the ID, and where to put the
+[[file:org.i3wm.relay.json]] manifest so the browser can find it. The
+path to the [[file:NativeMessageRelay]] in the installed manifest will
+also be tweaked to point back to this directory.
+
+** Playing Around
+
+"Inspect views" and open the console in the background page. Then:
+
+- ~i3.open()~ :: start up the relay
+- ~i3.ask( x )~ :: send a message
+  |         x | meaning                     |
+  |-----------+-----------------------------|
+  | "command" | COMMAND                     |
+  |         1 | GET_WORKSPACES              |
+  | ["a","b"] | SUBSCRIBE (not implemented) |
+  |         3 | GET_OUTPUTS                 |
+  |         4 | GET_TREE                    |
+  |         5 | GET_MARKS                   |
+  |         6 | GET_BAR_CONFIG              |
+  |         7 | GET_VERSION                 |
+- ~i3.close()~ :: shut it down
+
 ** Legal Stuff
 
 #+BEGIN_EXAMPLE
