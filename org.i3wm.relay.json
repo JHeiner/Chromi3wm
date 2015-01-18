@@ -1,8 +1,0 @@
-{
-    "name": "org.i3wm.relay",
-    "description": "Relay messages/replies to/from the i3 IPC socket.",
-    "path": "ABSOLUTEPATH/NativeMessageRelay",
-    "type": "stdio",
-    "allowed_origins": [
-	"chrome-extension://EXTENSIONID/" ]
-}
