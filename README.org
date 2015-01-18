@@ -12,10 +12,8 @@
 First, in [[chrome://extensions]] "load unpacked extension" from this
 directory. This will assign an ID, which needs to get put into the
 NativeMessagingHosts manifest. The [[file:Install]] script knows how
-to read the browser preferences to find the ID, and where to put the
-[[file:org.i3wm.relay.json]] manifest so the browser can find it. The
-path to the [[file:NativeMessageRelay]] in the installed manifest will
-also be tweaked to point back to this directory.
+to read the browser preferences to find the ID, and writes an
+appropriately configured manifest.
 
 ** Playing Around
 
