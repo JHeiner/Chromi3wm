@@ -1,10 +1,15 @@
 {
-    "name": "i3wm tricks",
-    "version": "0.2",
-    "description": "Message i3wm.",
+    "name": "Chromi3wm",
+    "version": "0.3",
+    "description": "Connects to i3.",
+    "icons": {
+        "16": "logo/10.png",
+        "32": "logo/20.png",
+        "48": "logo/30.png",
+        "128":"logo/80.png" },
     "background": {
-	"persistent": false,
-	"scripts": ["background.js"] },
+        "persistent": false,
+        "scripts": [ "trampoline.js" ] },
     "permissions": [ "nativeMessaging" ],
     "manifest_version": 2
 }

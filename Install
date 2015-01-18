@@ -2,7 +2,7 @@
 # Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
 # All rights reserved. See LICENSE file.
 
-import argparse, json, os, sys
+import argparse, json, re, os, sys
 
 config = os.environ.get('XDG_CONFIG_HOME') or '~/.config'
 
@@ -11,7 +11,7 @@ if not os.path.exists( os.path.expanduser( preferences ) ):
     preferences = os.path.join( config, 'google-chrome/Default/Preferences' )
 
 parser = argparse.ArgumentParser(
-    description='hooks NativeMessageRelay into Chrome',
+    description='hooks Trampoline into Chrome',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter )
 parser.add_argument( '-n', '--dryrun', action='store_true',
                      help='do nothing, just print info' )
@@ -23,14 +23,24 @@ args = parser.parse_args()
 
 preferences = os.path.expanduser( args.prefs )
 
-name = 'org.i3wm.relay'
 here = sys.path[0]
+print( '    from:', here )
+
+name = None
+matcher = re.compile( '^ i3.trampoline = "([.0-9_a-z]+)" ; $'
+                      .replace( ' ', r'\s*' ).replace( '"', '["\']' ) )
+with open( os.path.join( here, 'trampoline.js' ) ) as trampoline:
+    for line in trampoline:
+        match = matcher.match( line )
+        if match:
+            name = match.group( 1 )
+if not name:
+    raise RuntimeError( 'cannot find name in trampoline.js' )
+print( '    name:', name )
+
 into = os.path.join( os.path.dirname( os.path.dirname( preferences ) ),
                      'NativeMessagingHosts' )
-
-print( '    what:', name+'.json' )
-print( '    from:', here )
-print( '      to:', into )
+print( '    into:', into )
 
 ids = []
 with open( preferences ) as source:
@@ -56,8 +66,8 @@ elif not args.dryrun:
 
     manifest = {
         "name": name,
-        "description": "Relay messages/replies to/from the i3 IPC socket.",
-        "path": os.path.join( here, "NativeMessageRelay" ),
+        "description": "Bounce messages between Chrome and the i3 IPC socket.",
+        "path": os.path.join( here, "Trampoline" ),
         "allowed_origins": [ "chrome-extension://"+ids[0]+"/" ],
         "type": "stdio" }
 

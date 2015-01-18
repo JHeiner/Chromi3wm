@@ -19,7 +19,7 @@ appropriately configured manifest.
 
 "Inspect views" and open the console in the background page. Then:
 
-- ~i3.open()~ :: start up the relay
+- ~i3.open()~ :: start up the trampoline
 - ~i3.ask( x )~ :: send a message
   |         x | meaning                     |
   |-----------+-----------------------------|

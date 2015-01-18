@@ -1,0 +1,16 @@
+
+Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
+All rights reserved.
+
+The files in this directory are licensed under a
+Creative Commons Attribution-ShareAlike 3.0 Unported License.
+http://creativecommons.org/licenses/by-sa/3.0/
+
+The icons are derived with permission from the official i3 logo,
+which specifies the above license inside the SVG file:
+http://code.stapelberg.de/git/i3/tree/logo.svg?id=1953f2c7078585bd
+Thanks to Michael Stapelberg for making the logo available.
+The modifications were: adding a solid white background under the
+semi-transparent gradient and converting to PNG format.
+Tools used: inkscape and optipng.
+

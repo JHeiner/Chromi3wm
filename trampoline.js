@@ -12,7 +12,7 @@ I3.prototype = {
 		return delete this.port; },
 	open: function() {
 		this.close();
-		this.port = chrome.runtime.connectNative( 'org.i3wm.relay' );
+		this.port = chrome.runtime.connectNative( this.trampoline );
 		this.port.onMessage.addListener( this.listener.bind( this ) ); },
 	listener: function( message ) {
 		console.log( 'i3', message ); },
@@ -21,6 +21,7 @@ I3.prototype = {
 };
 
 var i3 = new I3();
+i3.trampoline = 'org.i3wm.trampoline';
 
 // Local Variables:
 // tab-width: 4
