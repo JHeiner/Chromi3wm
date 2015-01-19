@@ -3,11 +3,10 @@
 
 * Talk to i3 from a Chrome extension
 
-Uses "
+Uses
 [[http://developer.chrome.com/extensions/nativeMessaging][Native Messaging]]
-" to communicate with the "
-[[http://i3wm.org/docs/ipc.html][i3 IPC interface]]
-".
+to communicate with the
+[[http://i3wm.org/docs/ipc.html][i3 IPC interface]].
 
 ** Installing
 
@@ -20,13 +19,13 @@ Uses "
    - grab the extension ID from the browser preferences,
    - write a NativeMessagingHosts manifest that hooks the
      extension ID to the [[file:Trampoline]], and
-   - downloads [[http://d3js.org][D3.js]].
+   - download [[http://d3js.org][D3.js]].
 
 ** Playing Around
 
-The extension adds a "browser button" with the i3 logo
-([[file:logo/38.png]]). Click it to get a drop-down menu:
-- boxyTree :: renders the i3 tree to HTML tables.
+The extension adds a "browser button" with the i3 logo.
+Click it to get a drop-down menu:
+   - boxyTree :: renders the i3 tree to HTML tables.
 
 ** Legal Stuff
 
