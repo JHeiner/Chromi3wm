@@ -76,3 +76,16 @@ elif not args.dryrun:
 
     print( 'install successful' )
 
+d3dir = os.path.join( here, 'd3' )
+if not os.path.exists( d3dir ):
+    import urllib.request, io, zipfile
+    url = 'https://github.com/mbostock/d3/releases/download/v3.5.3/d3.zip'
+    print( 'downloading', url )
+    with urllib.request.urlopen( url ) as response:
+        if response.getheader( 'Content-Type' ) != 'application/octet-stream':
+            raise RuntimeError
+        b = bytearray( int( response.getheader( 'Content-Length' ) ) )
+        response.readinto( b )
+        with zipfile.ZipFile( io.BytesIO( b ) ) as zip:
+            zip.extractall( os.path.join( here, d3dir ) )
+

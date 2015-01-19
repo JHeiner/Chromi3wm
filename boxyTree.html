@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<script src="d3/d3.js" charset="utf-8"></script>
+<script src="trampoline.js" charset="utf-8"></script>
+<script src="boxyTree.js" charset="utf-8"></script>
+
+<style>
+
+  .missing { font-style: italic; font-size: smaller; }
+
+  .key { display: table-cell; border: solid #ddd 1px; font-weight: bold; }
+  .val { display: table-cell; border: solid #ddd 1px; }
+
+  .tbl { display: inline-table; }
+  .row { display: table-row; }
+
+  .arr:before { content: " [ " }
+  .arr:after { content: " ] " }
+  .obj:before { content: " { " }
+  .obj:after { content: " } " }
+
+  span { padding: 1px 5px; }
+  h1 { margin: 0; }
+  img { float: left; }
+  hr { clear: both; }
+
+</style>
+
+<img src=logo/128.png>
+<title>i3 tree - boxy</title>
+<h1><code>i3-msg -t get_tree</code></h1>
+<span id=time><em>working...</em></span>
+<hr>
+
+<div id=boxy></div>
