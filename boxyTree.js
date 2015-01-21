@@ -9,47 +9,41 @@ d3.selection.prototype.selectKids = function( selector ) {
 		.filter( selector ); }
 
 i3.fix = function( d, i ) {
-	var n = d3.select( this );
-	switch ( typeof( d ) ) {
-	case 'boolean': case 'number': case 'string':
-		var s = d.toString();
-		n.classed( s ? 'literal' : 'missing', true );
-		n.text( s ? s : '(emptystring)' );
-		break;
-	case 'object':
-		if ( ! d ) {
-			n.classed( 'missing', true );
-			n.text( '(null)' );
-			break; }
-
-		var arr = Array.isArray( d );
-		n.classed( arr ? 'arr' : 'obj', true );
-
-		var t = n.selectKids( 'div.tbl' ).data( [''] );
-		t.enter().append( 'div' ).classed( 'tbl', true );
-
-		var es = Object.keys( d ).map( function( k ) {
+	var isKeyed = typeof d === 'object' && d !== null;
+	var isPlain = isKeyed && ! Array.isArray( d );
+	var entries = ( ! isKeyed )
+		? [ { key : '_NeVeR_UsE_ThIs_As_A_KeY_', value : d } ]
+		: Object.keys( d ).map( function( k ) {
+			if ( k === '_NeVeR_UsE_ThIs_As_A_KeY_' )
+				throw new Error( "forbidden key found in data" );
 			return { key : k, value : d[k] }; } );
 
-		var rs = t.selectKids( 'div.row' )
-			.data( es, function( d, i ) { return d.key; } );
-		rs.enter().append( 'div' ).classed( 'row', true )
-			.each( function( d, i ) {
-				var r = d3.select( this );
-				if ( ! arr ) r.classed( 'key-'+d.key, true );
-				r.append( 'span' ).classed( 'key', true ).text( d.key );
-				r.append( 'span' ).classed( 'val', true ).datum( d.value ); } );
-		rs.selectKids( '.val' ).each( i3.fix );
+	var table = d3.select( this ).selectKids( 'div.tbl' )
+		.data( [ null ] );
+	table.enter().append( 'div' ).classed( 'tbl', true );
+	if ( ! table.exit().empty() )
+		throw new Error( "table should never exit" );
+	table.classed( { 'obj' : isPlain, 'arr' : isKeyed && ! isPlain } );
 
-		break;
-	default:
-		n.classed( 'missing', true );
-		n.text( '('+typeof(d)+')' );
-		break; } }
+	var rows = table.selectKids( 'div.row' )
+		.data( entries, function( d, i ) { return d.key; } );
+	rows.each( function( d, i ) {
+		if ( d.key === '_NeVeR_UsE_ThIs_As_A_KeY_' )
+			d3.select( this ).selectKids( '.val' ).text( d.value );
+		else
+			d3.select( this ).selectKids( '.val' ).datum( d.value ).each( i3.fix ); } );
+	rows.enter().append( 'div' ).classed( 'row', true ).each( function( d, i ) {
+		var row = d3.select( this );
+		if ( isPlain ) row.classed( 'key-'+d.key, true );
+		if ( d.key === '_NeVeR_UsE_ThIs_As_A_KeY_' ) {
+			row.append( 'span' ).classed( 'val', true ).text( d.value ); }
+		else {
+			row.append( 'span' ).classed( 'key', true ).text( d.key );
+			row.append( 'span' ).classed( 'val', true ).datum( d.value ).each( i3.fix ); } } );
+	rows.exit().remove(); }
 
 i3.listener = function( data ) {
 	var i3 = window.i3;
-	i3.close();
 
 	i3.data = data;
 	i3.time = d3.select( '#time' );
@@ -57,10 +51,10 @@ i3.listener = function( data ) {
 
 	i3.time.text( Date() );
 	i3.boxy.datum( data );
-	i3.boxy.each( i3.fix );
-}
+	i3.boxy.each( i3.fix ); }
+
 i3.open();
-i3.ask(4);
+i3.ask( 4 );
 
 // Local Variables:
 // tab-width: 4
