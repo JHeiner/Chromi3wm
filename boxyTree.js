@@ -2,56 +2,68 @@
 // Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
 // All rights reserved. See LICENSE file.
 
-"use strict";
+'use strict';
 
 d3.selection.prototype.selectKids = function( selector ) {
 	return this.selectAll( function( d, i ) { return this.children; } )
 		.filter( selector ); }
 
-i3.fix = function( d, i ) {
-	var isKeyed = typeof d === 'object' && d !== null;
-	var isPlain = isKeyed && ! Array.isArray( d );
-	var entries = ( ! isKeyed )
-		? [ { key : '_NeVeR_UsE_ThIs_As_A_KeY_', value : d } ]
-		: Object.keys( d ).map( function( k ) {
-			if ( k === '_NeVeR_UsE_ThIs_As_A_KeY_' )
-				throw new Error( "forbidden key found in data" );
-			return { key : k, value : d[k] }; } );
+i3.diff = false;
 
-	var table = d3.select( this ).selectKids( 'div.tbl' )
-		.data( [ null ] );
+i3.fix = function( d, i ) {
+	// the trickiest part is handling changes in typeof data values
+	// from scalar to aggregate or vice versa...
+	var isAggregate = typeof d === 'object' && d !== null;
+
+	// it might be reasonable to assume i3 would never change typeof,
+	// but there is really no need to make that assumption. we can
+	// just normalize all data values to be aggregate by wrapping any
+	// scalar in its own entry under a special key.
+	var entries = ( ! isAggregate ) ? [ { key : '', value : d } ]
+		: Object.keys( d ).map( function( k ) {
+			if ( k === '' ) throw new Error( "empty key found in data" );
+			return { key : k, value : d[ k ] }; } );
+
+	// this artifice allows the same d3 update/enter/exit code to
+	// handle scalars, aggregates and even typeof changes.
+
+	var node = d3.select( this );
+	var isArray = isAggregate && Array.isArray( d );
+	node.classed( { 'arr' : isArray, 'obj' : isAggregate && ! isArray } );
+
+	var table = node.selectKids( 'div.tbl' ) .data( [ null ] );
 	table.enter().append( 'div' ).classed( 'tbl', true );
 	if ( ! table.exit().empty() )
 		throw new Error( "table should never exit" );
-	table.classed( { 'obj' : isPlain, 'arr' : isKeyed && ! isPlain } );
 
 	var rows = table.selectKids( 'div.row' )
-		.data( entries, function( d, i ) { return d.key; } );
+		.data( entries, function( d, i ) { return d.key; } )
+		.classed( 'diff', false );
+	rows.enter().append( 'div' ).classed( i3.diff ? 'row diff' : 'row', true )
+		.each( function( d, i ) {
+			var row = d3.select( this );
+			if ( d.key !== '' ) row.classed( 'key-'+d.key, true )
+				.append( 'span' ).classed( 'key', true ).text( d.key );
+			row.append( 'span' ).classed( 'val', true ); } );
+	rows.exit().remove();
+
 	rows.each( function( d, i ) {
-		if ( d.key === '_NeVeR_UsE_ThIs_As_A_KeY_' )
-			d3.select( this ).selectKids( '.val' ).text( d.value );
-		else
-			d3.select( this ).selectKids( '.val' ).datum( d.value ).each( i3.fix ); } );
-	rows.enter().append( 'div' ).classed( 'row', true ).each( function( d, i ) {
-		var row = d3.select( this );
-		if ( isPlain ) row.classed( 'key-'+d.key, true );
-		if ( d.key === '_NeVeR_UsE_ThIs_As_A_KeY_' ) {
-			row.append( 'span' ).classed( 'val', true ).text( d.value ); }
+		var value = d3.select( this ).selectKids( '.val' );
+		if ( d.key !== '' )
+			value.datum( d.value ).each( i3.fix );
 		else {
-			row.append( 'span' ).classed( 'key', true ).text( d.key );
-			row.append( 'span' ).classed( 'val', true ).datum( d.value ).each( i3.fix ); } } );
-	rows.exit().remove(); }
+			var tostr = String( d.value );
+			if ( tostr == value.text() )
+				value.classed( 'diff', false );
+			else {
+				value.text( d.value );
+				value.classed( 'diff', i3.diff ); } } } ); }
 
 i3.listener = function( data ) {
-	var i3 = window.i3;
-
-	i3.data = data;
-	i3.time = d3.select( '#time' );
-	i3.boxy = d3.select( '#boxy' );
-
-	i3.time.text( Date() );
-	i3.boxy.datum( data );
-	i3.boxy.each( i3.fix ); }
+	i3.data = data; // keep for exploration/debugging
+	i3.time = d3.select( '#time' ).text( Date() );
+	i3.boxy = d3.select( '#boxy' ).datum( data ).each( i3.fix );
+	i3.diff = true; }
 
 i3.open();
 i3.ask( 4 );
