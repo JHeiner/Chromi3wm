@@ -25,20 +25,23 @@ All rights reserved. See LICENSE file. -->
 
   span { padding: 1px 5px; }
 
-  .missing { font-style: italic; font-size: smaller; }
-  .key { font-weight: bold; }
-
-  .error { background-color: mistyrose; font: italic smaller; }
   .diff { background-color: thistle; }
+  .key, .unhide { font-weight: bold; }
+  .show, .unhide, #time { border: solid #ddd 1px; margin: 1px;
+       background-color: #f8f8f8; display: inline-block; }
+  .key, .show, .unhide, #time { cursor: pointer; }
 
   .key-id { background-color: aliceblue; }
 
 </style>
+<style title=dynamic></style>
 
 <div class=prolog>
   <span class=title>i3-msg -t get_tree</span>
   <p>
     <span id=time><em>working...</em></span>
+  <p>
+    <div id=hidden></div>
 </div>
 
 <div class=content id=boxy></div>
