@@ -18,7 +18,7 @@ to communicate with the
 2. Run ./[[file:Install]], which will:
    - grab the extension ID from the browser preferences,
    - write a NativeMessagingHosts manifest that hooks the
-     extension ID to the [[file:Trampoline]], and
+     extension ID to the [[file:Trampoli3n]], and
    - download [[http://d3js.org][D3.js]].
 
 ** Playing Around

@@ -11,7 +11,7 @@ if not os.path.exists( os.path.expanduser( preferences ) ):
     preferences = os.path.join( config, 'google-chrome/Default/Preferences' )
 
 parser = argparse.ArgumentParser(
-    description='hooks Trampoline into Chrome',
+    description='hooks Trampoli3n into Chrome',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter )
 parser.add_argument( '-n', '--dryrun', action='store_true',
                      help='do nothing, just print info' )
@@ -27,15 +27,17 @@ here = sys.path[0]
 print( '    from:', here )
 
 name = None
-matcher = re.compile( '^ i3.trampoline = "([.0-9_a-z]+)" ; $'
+matcher = re.compile( '^ i3.trampoli3n = "([.0-9_a-z]+)" ; $'
                       .replace( ' ', r'\s*' ).replace( '"', '["\']' ) )
-with open( os.path.join( here, 'trampoline.js' ) ) as trampoline:
-    for line in trampoline:
+with open( os.path.join( here, 'trampoli3n.js' ) ) as trampoli3n:
+    for line in trampoli3n:
         match = matcher.match( line )
         if match:
+            if name:
+                raise RuntimeError( 'multiple matches found in trampoli3n.js' )
             name = match.group( 1 )
 if not name:
-    raise RuntimeError( 'cannot find name in trampoline.js' )
+    raise RuntimeError( 'cannot find name in trampoli3n.js' )
 print( '    name:', name )
 
 into = os.path.join( os.path.dirname( os.path.dirname( preferences ) ),
@@ -67,7 +69,7 @@ elif not args.dryrun:
     manifest = {
         "name": name,
         "description": "Bounce messages between Chrome and the i3 IPC socket.",
-        "path": os.path.join( here, "Trampoline" ),
+        "path": os.path.join( here, "Trampoli3n" ),
         "allowed_origins": [ "chrome-extension://"+ids[0]+"/" ],
         "type": "stdio" }
 
