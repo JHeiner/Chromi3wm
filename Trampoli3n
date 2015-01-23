@@ -2,11 +2,11 @@
 # Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
 # All rights reserved. See LICENSE file.
 
-import logging, socket, struct, subprocess, sys
+import logging, selectors, socket, struct, subprocess, sys
 
 from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
 
-logging.basicConfig( stream=sys.stderr, level=CRITICAL,
+logging.basicConfig( stream=sys.stderr, level=WARNING,
                      format="%(pathname)s:%(lineno)d: %(message)s" )
 
 logger = logging.getLogger()
@@ -85,7 +85,7 @@ try:
   errBadMessageType = b'"bad message: _"'
   errBadSubscribe = b'"subscribe unsupported"'
 
-  while True:
+  def fromChromeToI3ipc():
 
     try:
       fromChromeFill( twoView )
@@ -117,7 +117,7 @@ try:
         msgView[ length-2 ] = digit
         packInt32( length, twoView )
         toChromeDrain( storage[ 10 : 14+length ] )
-        continue
+        return
     else:
       first = message[0]
       last = message[-1]
@@ -132,7 +132,7 @@ try:
         msgView[ : length ] = errBadSubscribe
         packInt32( length, twoView )
         toChromeDrain( storage[ 10 : 14+length ] )
-        continue
+        return
       else:
         logger.warning( 'funky message from chrome: %s...%s', first, last )
         length = len( errBadMessageType )
@@ -140,10 +140,12 @@ try:
         msgView[ length-2 ] = first
         packInt32( length, twoView )
         toChromeDrain( storage[ 10 : 14+length ] )
-        continue
+        return
 
     mgcView[:] = magic
     toI3ipcDrain( storage[ 0 : 14+length ] )
+
+  def fromI3ipcToChrome():
 
     hdrView[:] = blank
     fromI3ipcFill( hdrView )
@@ -162,6 +164,15 @@ try:
 
     packInt32( length, twoView )
     toChromeDrain( storage[ 10 : 14+length ] )
+
+  selector = selectors.DefaultSelector()
+  selector.register( i3ipcSock, selectors.EVENT_READ, fromI3ipcToChrome )
+  selector.register( sys.stdin, selectors.EVENT_READ, fromChromeToI3ipc )
+  while True:
+    events = selector.select()
+    for key, mask in events:
+      callback = key.data
+      callback()
 
 except Exception:
   logger.exception( 'caught an exception' )
