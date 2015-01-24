@@ -27,6 +27,63 @@ The extension adds a "browser button" with the i3 logo.
 Click it to get a drop-down menu:
    - boxyTree :: renders the i3 tree to HTML tables.
 
+** Details of Bouncing
+
+The messages Chrome emits/accepts carry a single JSON value. But i3
+IPC defines different message types, many of which must have a JSON
+payload, some that never do, one that may or may not, and two message
+types where the payload is not actually JSON.
+
+The goals (and there is some tension between them) are:
+   - make things really simple from the Chrome side, and
+   - keep the python bouncing code uncomplicated and fast.
+
+A terse way to carry both a message type and a payload is to wrap them
+in a two-element array: =[ msgtype, payload ]=. Adding some redundancy
+might be a bit safer (e.g. against future changes to the i3 IPC
+protocol), but that slows down the bouncing code.
+
+It is a happy coincidence that all the payloads which i3 understandes
+are JSON are structures (objects or arrays) because those can be
+easily distinguished from strings. So whenever the bouncing code sees
+a simple string value payload it can JSON decode it and send the
+result to i3 as the not acutally JSON payload.
+
+Thus an empty string will be bounced to i3 as a zero length payload.
+Most of the messages that don't need payloads actually just ignore any
+payload, but the BAR_CONFIG message branches based on the length of
+the payload (non-zero means it is an ID).
+
+So in javascript the requests might be written:
+    | COMMAND    | [ 0, 'dosomething' ] |
+    | WORKSPACES | [ 1, '' ]            |
+    | SUBSCRIBE  | [ 2, ["mode"] ]      |
+    | OUTPUTS    | [ 3, '' ]            |
+    | TREE       | [ 4, '' ]            |
+    | MARKS      | [ 5, '' ]            |
+    | BAR_CONFIG | [ 6, '' ]            |
+    | BAR_CONFIG | [ 6, 'bar-0' ]       |
+    | VERSION    | [ 7, '' ]            |
+
+The replies would come back as two-element arrays with the integer
+msgtypes corresponding to the request, and a payload that is always
+either an object or an array (it is just passed along from i3).
+
+*** Event Messages
+
+The msgtypes i3 uses for events are a bit inconvenient, so the
+following numbering scheme is used instead:
+    | workspace        | [ -1, {...} ] |
+    | output           | [ -2, {...} ] |
+    | mode             | [ -3, {...} ] |
+    | window           | [ -4, {...} ] |
+    | barconfig_update | [ -5, {...} ] |
+
+*** Convenient Requests
+
+The trampoli3n.js library provides shortcuts.
+
+
 ** Legal Stuff
 
 #+BEGIN_EXAMPLE

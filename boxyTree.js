@@ -97,9 +97,9 @@ window.onload = function( loadEvent ) {
 					  'swallows','type','urgent','window','window_properties',
 					  'window_rect','workspace_layout'] )
 		document.body.onclick( {target:{className:'key',textContent:key}} );
-	i3.open();
+
 	var time = document.getElementById( 'time' );
-	time.onclick = function( clickEvent ) { i3.ask( 4 ); }
+	time.onclick = function( clickEvent ) { i3.tree(); }
 	time.onclick(); }
 
 // Local Variables:

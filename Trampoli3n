@@ -2,7 +2,7 @@
 # Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
 # All rights reserved. See LICENSE file.
 
-import logging, selectors, socket, struct, subprocess, sys
+import logging, re, selectors, socket, struct, subprocess, sys
 
 from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
 
@@ -79,11 +79,12 @@ try:
   oneView = storage[  6 : 10 ]
   twoView = storage[ 10 : 14 ]
   msgView = storage[ 14 :    ]
+  i3header = struct.Struct( '=6sii' )
 
   magic = b'i3-ipc'
   blank = b'@@@@@@@@@@@@@@'
-  errBadMessageType = b'"bad message: _"'
-  errBadSubscribe = b'"subscribe unsupported"'
+  valid = re.compile( rb' \[ (-?\d+) , (["{[]).*([]}"]) \] '
+                      .replace( b' ', rb'\s*' ) )
 
   def fromChromeToI3ipc():
 
@@ -101,66 +102,74 @@ try:
     message = msgView[ : length ]
     fromChromeFill( message )
 
-    if length == 1:
-      digit = message[0] - 0x30
-      if digit == 1 or 3 <= digit and digit <= 7:
-        logger.debug( 'recognized single-digit message: %s', digit )
-        # GET_{WORKSPACES,OUTPUTS,TREE,MARKS,BAR_CONFIG,VERSION}
-        length = 0 # no payload
-        packInt32( length, oneView )
-        packInt32( digit, twoView )
-      else:
-        digit += 0x30
-        logger.warning( 'funky char from chrome: %s', digit )
-        length = len( errBadMessageType )
-        msgView[ : length ] = errBadMessageType
-        msgView[ length-2 ] = digit
-        packInt32( length, twoView )
-        toChromeDrain( storage[ 10 : 14+length ] )
-        return
-    else:
-      first = message[0]
-      last = message[-1]
-      if first == 0x22 and message[-1] == 0x22: # COMMAND
-        logger.debug( 'recognized string' )
-        message[0] = message[-1] = 0x20
-        packInt32( length, oneView )
-        packInt32( 0, twoView )
-      elif first == 0x5b and message[-1] == 0x5d: # SUBSCRIBE
-        logger.debug( 'recognized array' )
-        length = len( errBadSubscribe )
-        msgView[ : length ] = errBadSubscribe
-        packInt32( length, twoView )
-        toChromeDrain( storage[ 10 : 14+length ] )
-        return
-      else:
-        logger.warning( 'funky message from chrome: %s...%s', first, last )
-        length = len( errBadMessageType )
-        msgView[ : length ] = errBadMessageType
-        msgView[ length-2 ] = first
-        packInt32( length, twoView )
-        toChromeDrain( storage[ 10 : 14+length ] )
-        return
+    match = valid.fullmatch( message )
+    if not match:
+      raise RuntimeError( 'bad message: %s' % bytes(message) )
+    if extra:
+      logger.debug( 'matched: %s', match.groups() )
+    msgType = int( match.group( 1 ) )
+    src = match.start( 2 )
+    end = match.end( 3 )
+    message.release()
 
-    mgcView[:] = magic
+    length = 0
+    isString = msgView[ src ] == msgView[ end - 1 ]
+    if isString:
+      src += 1
+      end -= 1
+    while src < end:
+      char = msgView[ src ]
+      src += 1
+      if isString and char == 0x5c:
+        if src >= end:
+          raise RuntimeError( 'truncated JSON string escape' )
+        char = msgView[ src ]
+        src += 1
+        if char != 0x22: # "
+          raise RuntimeError( 'unsupported JSON string escape 0x%X' % char )
+      msgView[ length ] = char
+      length += 1
+
+    i3header.pack_into( hdrView, 0, magic, length, msgType )
     toI3ipcDrain( storage[ 0 : 14+length ] )
 
   def fromI3ipcToChrome():
 
-    hdrView[:] = blank
+    i3header.pack_into( hdrView, 0, magic, 0, 0 )
     fromI3ipcFill( hdrView )
     if not mgcView == magic:
       raise RuntimeError( 'bad magic: %s' % bytes(mgcView) )
     length = unpackInt32( oneView )
     msgType = unpackInt32( twoView )
-    logger.debug( 'parsed i3ipc header: %s %s %s',
-                  bytes(mgcView), length, msgType )
-    if length < 0 or len( msgView ) < length:
+    if ( msgType & 0x80000000 ):
+      msgType = -1 - ( msgType & 0x7fffffff )
+    logger.debug( 'parsed i3ipc header: %s %s', length, msgType )
+    prefix = str(msgType).encode()
+    if length < 0 or len( msgView ) - len( prefix ) - 3 < length:
       raise RuntimeError( 'i3ipc message length %s rejected' % length )
 
     message = msgView[ : length ]
     fromI3ipcFill( message )
     message.release()
+
+    src = length
+    length += len( prefix ) + 3
+    dst = length - 1
+    msgView[ dst ] = 0x5d
+    while src > 0:
+      src -= 1
+      dst -= 1
+      msgView[ dst ] = msgView[ src ]
+    dst -= 1
+    msgView[ dst ] = 0x2c
+    src = len( prefix )
+    while src > 0:
+      src -= 1
+      dst -= 1
+      msgView[ dst ] = prefix[ src ]
+    if dst != 1:
+      raise RuntimeError( 'bad arraycopy: %s' % dst )
+    msgView[ 0 ] = 0x5b
 
     packInt32( length, twoView )
     toChromeDrain( storage[ 10 : 14+length ] )
@@ -171,8 +180,7 @@ try:
   while True:
     events = selector.select()
     for key, mask in events:
-      callback = key.data
-      callback()
+      ( key.data )()
 
 except Exception:
   logger.exception( 'caught an exception' )
