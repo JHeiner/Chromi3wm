@@ -5,7 +5,7 @@
 'use strict';
 
 d3.selection.prototype.selectKids = function( selector ) {
-	return this.selectAll( function( d, i ) { return this.children; } )
+	return this.selectAll( function() { return this.children; } )
 		.filter( selector ); }
 
 i3.diff = false;
@@ -37,17 +37,17 @@ i3.fix = function( d, i ) {
 		throw new Error( "table should never exit" );
 
 	var rows = table.selectKids( 'div.row' )
-		.data( entries, function( d, i ) { return d.key; } )
+		.data( entries, function( d ) { return d.key; } )
 		.classed( 'diff', false );
 	rows.enter().append( 'div' ).classed( i3.diff ? 'row diff' : 'row', true )
-		.each( function( d, i ) {
+		.each( function( d ) {
 			var row = d3.select( this );
 			if ( d.key !== '' ) row.classed( 'key-'+d.key, true )
 				.append( 'span' ).classed( 'key', true ).text( d.key );
 			row.append( 'span' ).classed( 'val', true ); } );
 	rows.exit().remove();
 
-	rows.each( function( d, i ) {
+	rows.each( function( d ) {
 		var value = d3.select( this ).selectKids( '.val' );
 		if ( d.key !== '' )
 			value.datum( d.value ).each( i3.fix );
@@ -61,13 +61,21 @@ i3.fix = function( d, i ) {
 
 i3.listener = function( data ) {
 	i3.data = data; // keep for exploration/debugging
-	i3.time = d3.select( '#time' ).text( Date() );
-	i3.boxy = d3.select( '#boxy' ).datum( data ).each( i3.fix );
+	var now = ( new Date() ).toJSON();
+	console.log( 'i3.listener', 'boxy', now );
+	i3.time.text( now );
+	i3.boxy.datum( data ).each( i3.fix );
 	i3.diff = true; }
 
 window.onload = function( loadEvent ) {
-	i3.sheet = Array.prototype.find.call( document.styleSheets,
+	i3.time = d3.select( '#time' );
+	i3.boxy = d3.select( '#boxy' );
+	i3.sheet = Array.prototype.filter.call( document.styleSheets,
 		function( it ) { return it.title === 'dynamic'; } );
+	if ( i3.sheet.length !== 1 ) {
+		console.error( "can't find dynamic style sheet", i3.sheet );
+		return; }
+	i3.sheet = i3.sheet[0];
 	document.body.onclick = function( clickEvent ) {
 		if ( clickEvent.target.className !== 'key' )
 			return;
@@ -84,8 +92,12 @@ window.onload = function( loadEvent ) {
 		hidden.append( 'span' ).classed( 'show', true )
 			.text( name )[0][0].onclick = function( showEvent ) {
 				var selector = '.key-'+showEvent.target.textContent;
-				var index = Array.prototype.findIndex.call( i3.sheet.rules,
+				var found = Array.prototype.filter.call( i3.sheet.rules,
 					function( it ) { return it.selectorText == selector; } );
+				if ( found.length !== 1 ) {
+					console.error( "no rule", selector, found, i3.sheet.rules );
+					return; }
+				var index = Array.prototype.indexOf.call( i3.sheet.rules, found[0] );
 				showEvent.target.remove();
 				i3.sheet.removeRule( index );
 				if ( ! i3.sheet.rules.length )
@@ -97,10 +109,8 @@ window.onload = function( loadEvent ) {
 					  'swallows','type','urgent','window','window_properties',
 					  'window_rect','workspace_layout'] )
 		document.body.onclick( {target:{className:'key',textContent:key}} );
-
-	var time = document.getElementById( 'time' );
-	time.onclick = function( clickEvent ) { i3.tree(); }
-	time.onclick(); }
+	i3.time.on( 'click', i3.tree.bind( i3 ) );
+	i3.tree(); }
 
 // Local Variables:
 // tab-width: 4
