@@ -27,17 +27,17 @@ here = sys.path[0]
 print( '    from:', here )
 
 name = None
-matcher = re.compile( '^ i3.trampoli3n = "([.0-9_a-z]+)" ; $'
-                      .replace( ' ', r'\s*' ).replace( '"', '["\']' ) )
-with open( os.path.join( here, 'trampoli3n.js' ) ) as trampoli3n:
-    for line in trampoli3n:
+matcher = re.compile( '^ val trampoli3n = "([.0-9_a-z]+)" $'
+                      .replace( ' ', r'\s*' ) )
+with open( os.path.join( here, 'src.scala' ) ) as scalaSrc:
+    for line in scalaSrc:
         match = matcher.match( line )
         if match:
             if name:
-                raise RuntimeError( 'multiple matches found in trampoli3n.js' )
+                raise RuntimeError( 'multiple matches found in src.scala' )
             name = match.group( 1 )
 if not name:
-    raise RuntimeError( 'cannot find name in trampoli3n.js' )
+    raise RuntimeError( 'cannot find name in src.scala' )
 print( '    name:', name )
 
 into = os.path.join( os.path.dirname( os.path.dirname( preferences ) ),

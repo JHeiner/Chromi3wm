@@ -1,6 +1,6 @@
 {
     "name": "Chromi3wm",
-    "version": "0.4",
+    "version": "0.5",
     "description": "Connects to i3.",
     "icons": {
         "16": "logo/16.png",
@@ -11,8 +11,10 @@
         "default_icon": {
             "19": "logo/19.png",
             "38": "logo/38.png" },
-        "default_title": "Query i3",
-        "default_popup": "popup.html" },
+        "default_title": "Connect to i3" },
+    "background": {
+        "persistent": false,
+        "scripts": ["background.js"] },
     "permissions": [ "nativeMessaging" ],
     "minimum_chrome_version": "39",
     "manifest_version": 2

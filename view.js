@@ -8,9 +8,11 @@ d3.selection.prototype.selectKids = function( selector ) {
 	return this.selectAll( function() { return this.children; } )
 		.filter( selector ); }
 
-i3.diff = false;
+window.onload = function( loadEvent ) {
 
-i3.fix = function( d, i ) {
+	window.i3 = Chromi3wm().i3
+
+i3.boxy = function( d, i ) {
 	// the trickiest part is handling changes in typeof data values
 	// from scalar to aggregate or vice versa...
 	var isAggregate = typeof d === 'object' && d !== null;
@@ -50,7 +52,7 @@ i3.fix = function( d, i ) {
 	rows.each( function( d ) {
 		var value = d3.select( this ).selectKids( '.val' );
 		if ( d.key !== '' )
-			value.datum( d.value ).each( i3.fix );
+			value.datum( d.value ).each( i3.boxy );
 		else {
 			var tostr = String( d.value );
 			if ( tostr == value.text() )
@@ -59,23 +61,13 @@ i3.fix = function( d, i ) {
 				value.text( d.value );
 				value.classed( 'diff', i3.diff ); } } } ); }
 
-i3.listener = function( data ) {
-	i3.data = data; // keep for exploration/debugging
-	var now = ( new Date() ).toJSON();
-	console.log( 'i3.listener', 'boxy', now );
-	i3.time.text( now );
-	i3.boxy.datum( data ).each( i3.fix );
-	i3.diff = true; }
-
-window.onload = function( loadEvent ) {
-	i3.time = d3.select( '#time' );
-	i3.boxy = d3.select( '#boxy' );
 	i3.sheet = Array.prototype.filter.call( document.styleSheets,
 		function( it ) { return it.title === 'dynamic'; } );
 	if ( i3.sheet.length !== 1 ) {
 		console.error( "can't find dynamic style sheet", i3.sheet );
 		return; }
 	i3.sheet = i3.sheet[0];
+
 	document.body.onclick = function( clickEvent ) {
 		if ( clickEvent.target.className !== 'key' )
 			return;
@@ -109,8 +101,7 @@ window.onload = function( loadEvent ) {
 					  'swallows','type','urgent','window','window_properties',
 					  'window_rect','workspace_layout'] )
 		document.body.onclick( {target:{className:'key',textContent:key}} );
-	i3.time.on( 'click', i3.tree.bind( i3 ) );
-	i3.tree(); }
+}
 
 // Local Variables:
 // tab-width: 4

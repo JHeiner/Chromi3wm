@@ -2,11 +2,11 @@
 Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
 All rights reserved. See LICENSE file. -->
 
-<title>i3 tree - boxy</title>
+<title>Chromi3wm</title>
 
-<script src="d3/d3.js" charset="utf-8"></script>
-<script src="trampoli3n.js" charset="utf-8"></script>
-<script src="boxyTree.js" charset="utf-8"></script>
+<script src="d3/d3.js"></script>
+<script src="chromi3wm-opt.js"></script>
+<script src="view.js"></script>
 
 <style>
 
@@ -20,10 +20,15 @@ All rights reserved. See LICENSE file. -->
   .obj:after { content: " }" }
 
   .title { font: bold xx-large monospace; }
-  .prolog:before { content: url(logo/128.png); float: left; }
-  .content { clear: both; }
+  #prolog:before { content: url(logo/128.png); float: left; }
+  #result { clear: both; }
 
   span { padding: 1px 5px; }
+
+  #time { margin: 1px; border: solid #ddd 1px; padding: 10px;
+    cursor: pointer; background-color: #f8f8f8; }
+
+  rect { fill: #eee; stroke: black; }
 
   .diff { background-color: thistle; }
   .key, .unhide { font-weight: bold; }
@@ -36,13 +41,17 @@ All rights reserved. See LICENSE file. -->
 </style>
 <style title=dynamic></style>
 
-<div class=prolog>
+<div id=prolog>
   <span class=title>i3-msg -t get_tree</span>
   <p>
     <span id=time><em>working...</em></span>
+    <select id=menu required>
+      <option value=area>area</option>
+      <option value=boxy>boxy</option>
+    </select>
   <p>
     <div id=hidden></div>
 </div>
 
-<div class=content id=boxy></div>
+<div id=result></div>
 
