@@ -24,8 +24,13 @@ to communicate with the
 ** Playing Around
 
 The extension adds a "browser button" with the i3 logo.
-Click it to get a drop-down menu:
-   - boxyTree :: renders the i3 tree to HTML tables.
+Click it to open a new tab. Near the top is a menu to choose
+how the i3 tree is rendered:
+   - area :: SVG rects with sizes and positions related to what
+             appears on the screen. Padding is inserted so that parent
+             containers which are completely obscured on-screen by
+             their children can be seen.
+   - boxy :: nested HTML tables.
 
 ** Details of Bouncing
 
@@ -78,10 +83,6 @@ following numbering scheme is used instead:
     | mode             | [ -3, {...} ] |
     | window           | [ -4, {...} ] |
     | barconfig_update | [ -5, {...} ] |
-
-*** Convenient Requests
-
-The trampoli3n.js library provides shortcuts.
 
 
 ** Legal Stuff

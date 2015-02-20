@@ -6,14 +6,13 @@ TGT := target/scala-2.11
 
 all : $(OPT) $(MAP)
 
-$(OPT) : $(TGT)/$(OPT)
-	cp -p $< $@
-
-$(MAP) : $(TGT)/$(MAP) Makefile
-	sed -e 's=file://$(CURDIR)/==' $< > $@
-
-$(TGT)/$(OPT) $(TGT)/$(MAP) : src.scala
+$(OPT) $(MAP) : src.scala
 	sbt fastOptJS fullOptJS
+	cp $(TGT)/$(OPT) $(OPT)
+	sed -e 's=file://$(CURDIR)/==' $(TGT)/$(MAP) > $(MAP)
+
+clean :
+	rm -r project/{project,target} target
 
 install :
 	./Install
@@ -21,3 +20,4 @@ install :
 uninstall :
 	./Install --uninstall
 
+.PHONY : all clean install uninstall
