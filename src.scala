@@ -286,6 +286,7 @@ import js.Dynamic.global
     var diff = false
     var last = "none"
     var boxy:js.UndefOr[js.ThisFunction] = js.undefined
+    var auto:js.UndefOr[js.Dynamic] = js.undefined
 
     def listener( message:js.Any ) {
       data = message ; root = null
@@ -316,7 +317,9 @@ import js.Dynamic.global
 	  result.selectKids( "div" ).datum( data ).each( boxy )
 	  diff = true
         case other =>
-          global.console.log( "impossible menu option", other ) } }
+          global.console.log( "impossible menu option", other ) }
+      if ( auto.nonEmpty && js.DynamicImplicits.truthValue( auto.get ) )
+        global.window.setTimeout( tree _, 1000 ) }
 
     def command( cmd:String )    { ask( 0, cmd ) }
     def subscribe( to:String * ) { ask( 2, to.to[js.Array] ) }

@@ -1518,7 +1518,8 @@ ScalaJS.c.LChromi3wm$I3 = (function() {
   this.root$1 = null;
   this.diff$1 = false;
   this.last$1 = null;
-  this.boxy$1 = null
+  this.boxy$1 = null;
+  this.auto$1 = null
 });
 ScalaJS.c.LChromi3wm$I3.prototype = new ScalaJS.h.O();
 ScalaJS.c.LChromi3wm$I3.prototype.constructor = ScalaJS.c.LChromi3wm$I3;
@@ -1549,6 +1550,7 @@ ScalaJS.c.LChromi3wm$I3.prototype.init___ = (function() {
   this.diff$1 = false;
   this.last$1 = "none";
   this.boxy$1 = (void 0);
+  this.auto$1 = (void 0);
   this.tree__V();
   return this
 });
@@ -1587,6 +1589,9 @@ ScalaJS.c.LChromi3wm$I3.prototype.$$js$exported$prop$menu__O = (function() {
 });
 ScalaJS.c.LChromi3wm$I3.prototype.$$js$exported$meth$tree__O = (function() {
   this.tree__V()
+});
+ScalaJS.c.LChromi3wm$I3.prototype.$$js$exported$prop$auto__O = (function() {
+  return this.auto$1
 });
 ScalaJS.c.LChromi3wm$I3.prototype.$$js$exported$meth$version__O = (function() {
   this.version__V()
@@ -1638,6 +1643,9 @@ ScalaJS.c.LChromi3wm$I3.prototype.$$js$exported$meth$workspaces__O = (function()
 });
 ScalaJS.c.LChromi3wm$I3.prototype.$$js$exported$meth$command__T__O = (function(cmd) {
   this.command__T__V(cmd)
+});
+ScalaJS.c.LChromi3wm$I3.prototype.$$js$exported$prop$auto__sjs_js_UndefOr__O = (function(x$1) {
+  this.auto$1 = x$1
 });
 ScalaJS.c.LChromi3wm$I3.prototype.bars__V = (function() {
   this.ask__I__sjs_js_Any__V(6, "")
@@ -1715,6 +1723,26 @@ ScalaJS.c.LChromi3wm$I3.prototype.listener__sjs_js_Any__V = (function(message) {
     this.diff$1 = true
   } else {
     ScalaJS.g["console"]["log"]("impossible menu option", x1)
+  };
+  var $$this$1 = this.auto$1;
+  if (($$this$1 !== (void 0))) {
+    var $$this$2 = this.auto$1;
+    if (($$this$2 === (void 0))) {
+      var x;
+      throw new ScalaJS.c.ju_NoSuchElementException().init___T("undefined.get")
+    } else {
+      var x = $$this$2
+    };
+    var jsx$4 = ScalaJS.uZ((!(!x)))
+  } else {
+    var jsx$4 = false
+  };
+  if (jsx$4) {
+    ScalaJS.g["window"]["setTimeout"]((function(arg$outer) {
+      return (function() {
+        arg$outer.tree__V()
+      })
+    })(this), 1000)
   }
 });
 ScalaJS.c.LChromi3wm$I3.prototype.close__V = (function() {
@@ -1855,6 +1883,16 @@ Object["defineProperty"](ScalaJS.c.LChromi3wm$I3.prototype, "boxy", {
   }),
   "get": (function() {
     return this.$$js$exported$prop$boxy__O()
+  }),
+  "enumerable": true
+});
+Object["defineProperty"](ScalaJS.c.LChromi3wm$I3.prototype, "auto", {
+  "set": (function(arg$1) {
+    var preparg$1 = arg$1;
+    this.$$js$exported$prop$auto__sjs_js_UndefOr__O(preparg$1)
+  }),
+  "get": (function() {
+    return this.$$js$exported$prop$auto__O()
   }),
   "enumerable": true
 });
