@@ -1954,7 +1954,7 @@ ScalaJS.c.LChromi3wm$WrappedContainer.prototype.yIn__LChromi3wm$EdgeFunction__I 
   var jsx$1 = this.y1__I();
   var coord = this.y1__I();
   var depth = this.depth$1;
-  return ((jsx$1 + ScalaJS.imul(16, yf.apply__I__Z__I__I(coord, false, depth))) | 0)
+  return ((jsx$1 + ScalaJS.imul(40, yf.apply__I__Z__I__I(coord, false, depth))) | 0)
 });
 ScalaJS.c.LChromi3wm$WrappedContainer.prototype.$$js$exported$prop$dx__O = (function() {
   return this.dx__I()
@@ -1966,7 +1966,7 @@ ScalaJS.c.LChromi3wm$WrappedContainer.prototype.hIn__LChromi3wm$EdgeFunction__I 
   var jsx$1 = this.y2__I();
   var coord = this.y2__I();
   var depth = this.depth$1;
-  return ((((jsx$1 + ScalaJS.imul(16, yf.apply__I__Z__I__I(coord, true, depth))) | 0) - this.yIn__LChromi3wm$EdgeFunction__I(yf)) | 0)
+  return ((((jsx$1 + ScalaJS.imul(40, yf.apply__I__Z__I__I(coord, true, depth))) | 0) - this.yIn__LChromi3wm$EdgeFunction__I(yf)) | 0)
 });
 ScalaJS.c.LChromi3wm$WrappedContainer.prototype.x1__I = (function() {
   return ScalaJS.uI(this.c$1["rect"]["x"])
@@ -2029,7 +2029,7 @@ ScalaJS.c.LChromi3wm$WrappedContainer.prototype.wIn__LChromi3wm$EdgeFunction__I 
   var jsx$1 = this.x2__I();
   var coord = this.x2__I();
   var depth = this.depth$1;
-  return ((((jsx$1 + ScalaJS.imul(16, xf.apply__I__Z__I__I(coord, true, depth))) | 0) - this.xIn__LChromi3wm$EdgeFunction__I(xf)) | 0)
+  return ((((jsx$1 + ScalaJS.imul(40, xf.apply__I__Z__I__I(coord, true, depth))) | 0) - this.xIn__LChromi3wm$EdgeFunction__I(xf)) | 0)
 });
 ScalaJS.c.LChromi3wm$WrappedContainer.prototype.$$js$exported$prop$depth__O = (function() {
   return this.depth$1
@@ -2041,7 +2041,7 @@ ScalaJS.c.LChromi3wm$WrappedContainer.prototype.xIn__LChromi3wm$EdgeFunction__I 
   var jsx$1 = this.x1__I();
   var coord = this.x1__I();
   var depth = this.depth$1;
-  return ((jsx$1 + ScalaJS.imul(16, xf.apply__I__Z__I__I(coord, false, depth))) | 0)
+  return ((jsx$1 + ScalaJS.imul(40, xf.apply__I__Z__I__I(coord, false, depth))) | 0)
 });
 Object["defineProperty"](ScalaJS.c.LChromi3wm$WrappedContainer.prototype, "c", {
   "get": (function() {
@@ -4296,35 +4296,43 @@ ScalaJS.c.LChromi3wm$Workspace.prototype.render__sjs_js_Any__V = (function(liEle
   }));
   rs["exit"]()["remove"]();
   rs["enter"]()["append"]("rect")["append"]("title");
-  rs["attr"]("x", (function(arg$outer) {
-    return (function(w$2$1) {
+  rs["order"]()["each"]((function(f) {
+    return (function(arg1) {
+      return f.apply__O__O__O(this, arg1)
+    })
+  })(new ScalaJS.c.sjsr_AnonFunction2().init___sjs_js_Function2((function(arg$outer) {
+    return (function(t$2, w$2$1) {
       var w = ScalaJS.as.LChromi3wm$WrappedContainer(w$2$1);
-      return w.xIn__LChromi3wm$EdgeFunction__I(arg$outer.xFunc$2)
+      var n = ScalaJS.g["d3"]["select"](t$2);
+      var value$2 = w.xIn__LChromi3wm$EdgeFunction__I(arg$outer.xFunc$2);
+      var jsx$13 = n["attr"]("x", value$2);
+      var value$3 = w.yIn__LChromi3wm$EdgeFunction__I(arg$outer.yFunc$2);
+      var jsx$12 = jsx$13["attr"]("y", value$3);
+      var value$4 = w.wIn__LChromi3wm$EdgeFunction__I(arg$outer.xFunc$2);
+      var jsx$11 = jsx$12["attr"]("width", value$4);
+      var value$5 = w.hIn__LChromi3wm$EdgeFunction__I(arg$outer.yFunc$2);
+      var jsx$10 = jsx$11["attr"]("height", value$5);
+      var value$6 = ((w.c$1["window"] === null) && (ScalaJS.as.T(w.c$1["layout"]) === "splith"));
+      var jsx$9 = jsx$10["classed"]("splith", value$6);
+      var value$7 = ((w.c$1["window"] === null) && (ScalaJS.as.T(w.c$1["layout"]) === "splitv"));
+      var jsx$8 = jsx$9["classed"]("splitv", value$7);
+      var value$8 = ((w.c$1["window"] === null) && (ScalaJS.as.T(w.c$1["layout"]) === "stacked"));
+      var jsx$7 = jsx$8["classed"]("stacked", value$8);
+      var value$9 = ((w.c$1["window"] === null) && (ScalaJS.as.T(w.c$1["layout"]) === "tabbed"));
+      var jsx$6 = jsx$7["classed"]("tabbed", value$9);
+      var value$10 = (w.c$1["window"] !== null);
+      var jsx$5 = jsx$6["classed"]("window", value$10);
+      var jsx$4 = jsx$5["selectKids"]("title");
+      if ((w.c$1["window"] === null)) {
+        var s$1 = ScalaJS.as.T(w.c$1["layout"]);
+        var jsx$3 = s$1
+      } else {
+        var s$2 = ScalaJS.as.T(w.c$1["name"]);
+        var jsx$3 = s$2
+      };
+      return jsx$4["text"](jsx$3)
     })
-  })(this))["attr"]("y", (function(arg$outer$1) {
-    return (function(w$2$2) {
-      var w$1 = ScalaJS.as.LChromi3wm$WrappedContainer(w$2$2);
-      return w$1.yIn__LChromi3wm$EdgeFunction__I(arg$outer$1.yFunc$2)
-    })
-  })(this))["attr"]("width", (function(arg$outer$2) {
-    return (function(w$2$3) {
-      var w$3 = ScalaJS.as.LChromi3wm$WrappedContainer(w$2$3);
-      return w$3.wIn__LChromi3wm$EdgeFunction__I(arg$outer$2.xFunc$2)
-    })
-  })(this))["attr"]("height", (function(arg$outer$3) {
-    return (function(w$2$4) {
-      var w$4 = ScalaJS.as.LChromi3wm$WrappedContainer(w$2$4);
-      return w$4.hIn__LChromi3wm$EdgeFunction__I(arg$outer$3.yFunc$2)
-    })
-  })(this))["selectKids"]("title")["text"]((function(w$2$5) {
-    var w$5 = ScalaJS.as.LChromi3wm$WrappedContainer(w$2$5);
-    var $$this = w$5.c$1["window"];
-    if (($$this !== (void 0))) {
-      return ScalaJS.as.T(w$5.c$1["name"])
-    } else {
-      return ScalaJS.as.T(w$5.c$1["layout"])
-    }
-  }))
+  })(this))))
 });
 ScalaJS.c.LChromi3wm$Workspace.prototype.$$js$exported$prop$key__O = (function() {
   return this.key$2

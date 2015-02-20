@@ -1,4 +1,7 @@
 
+// Copyright © 2015, Jeremy Heiner (github.com/JHeiner).
+// All rights reserved. See LICENSE file.
+
 import scala.scalajs.js
 import js.annotation._
 import js.Dynamic.global
@@ -10,9 +13,9 @@ import js.Dynamic.global
   trait Container extends js.Object {
     val id, current_border_width : Int = js.native
     val name, `type`, border, layout, orientation : String = js.native
-    val percent : js.UndefOr[Double] = js.native
+    val percent : js.Any = js.native // Double, but can be null (never undefined)
     val rect, window_rect, geometry : XYWidthHeight = js.native
-    val window : js.UndefOr[Int] = js.native
+    val window : js.Any = js.native // Int, but can be null (never undefined)
     val urgent, focused : Boolean = js.native
     val nodes, floating_nodes : js.Array[Container] = js.native }
 
@@ -78,10 +81,10 @@ import js.Dynamic.global
       xm.mark( x1, false, depth ) ; xm.mark( x2, true, depth )
       ym.mark( y1, false, depth ) ; ym.mark( y2, true, depth ) }
 
-    def xIn( xf:EdgeFunction ) = x1 + 16 * xf.lo( x1, depth )
-    def yIn( yf:EdgeFunction ) = y1 + 16 * yf.lo( y1, depth )
-    def wIn( xf:EdgeFunction ) = x2 + 16 * xf.hi( x2, depth ) - xIn( xf )
-    def hIn( yf:EdgeFunction ) = y2 + 16 * yf.hi( y2, depth ) - yIn( yf )
+    def xIn( xf:EdgeFunction ) = x1 + 40 * xf.lo( x1, depth )
+    def yIn( yf:EdgeFunction ) = y1 + 40 * yf.lo( y1, depth )
+    def wIn( xf:EdgeFunction ) = x2 + 40 * xf.hi( x2, depth ) - xIn( xf )
+    def hIn( yf:EdgeFunction ) = y2 + 40 * yf.hi( y2, depth ) - yIn( yf )
   }
 
   @JSExportAll class Root( c:Container )
@@ -176,14 +179,23 @@ import js.Dynamic.global
       svg.attr( "width", width / 4 )
         .attr( "height", height / 4 )
         .attr( "viewBox", xIn( xFunc )+" "+yIn( yFunc )+" "+width+" "+height )
-      val rs = svg.selectKids( "rect" ).data( flat )
+      val rs = svg.selectKids( "rect" ).data( flat, { w:js.Dynamic => w.c.id } )
       rs.exit().remove()
-      rs.enter().append( "rect" )
-      rs.attr( "x", { w:WrappedContainer => w.xIn( xFunc ) } )
-        .attr( "y", { w:WrappedContainer => w.yIn( yFunc ) } )
-        .attr( "width", { w:WrappedContainer => w.wIn( xFunc ) } )
-        .attr( "height", { w:WrappedContainer => w.hIn( yFunc ) } )
-    }
+      rs.enter().append( "rect" ).append( "title" )
+      rs.order().each( { ( t:js.Any, w:WrappedContainer ) =>
+        val n = global.d3.select( t )
+        n.attr( "x", w.xIn( xFunc ) )
+          .attr( "y", w.yIn( yFunc ) )
+          .attr( "width", w.wIn( xFunc ) )
+          .attr( "height", w.hIn( yFunc ) )
+          .classed( "splith", w.c.window == null && w.c.layout == "splith" )
+          .classed( "splitv", w.c.window == null && w.c.layout == "splitv" )
+          .classed( "stacked", w.c.window == null && w.c.layout == "stacked" )
+          .classed( "tabbed", w.c.window == null && w.c.layout == "tabbed" )
+          .classed( "window", w.c.window != null )
+          .selectKids( "title" ) // does not pass data down
+          .text( if ( w.c.window == null ) w.c.layout else w.c.name )
+      }:js.ThisFunction ) }
   }
 
   @JSExportAll class Tile( c:Container )
