@@ -1,13 +1,13 @@
 
-OPT := chromi3wm-opt.js
-MAP := chromi3wm-opt.js.map
+OPT := chromi3wm-fastopt.js
+MAP := chromi3wm-fastopt.js.map
 
 TGT := target/scala-2.11
 
 all : $(OPT) $(MAP)
 
 $(OPT) $(MAP) : src.scala
-	sbt fastOptJS fullOptJS
+	sbt fastOptJS
 	cp $(TGT)/$(OPT) $(OPT)
 	sed -e 's=file://$(CURDIR)/==' $(TGT)/$(MAP) > $(MAP)
 
